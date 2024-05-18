@@ -15,7 +15,10 @@ import { CircleUser, LogOut } from "lucide-react";
 export function AvatarComponent() {
   return (
     <Avatar>
-      <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+      <AvatarImage
+        src="https://i.seadn.io/s/raw/files/8c8784d64b65d81993a2d86308114f78.jpg?auto=format&dpr=1&w=1000"
+        alt="@shadcn"
+      />
       <AvatarFallback>CN</AvatarFallback>
     </Avatar>
   );
@@ -61,22 +64,13 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              {/* <img
-                className="h-8 w-8"
-                src="/path-to-your-logo.png"
-                alt="Logo"
-              /> */}
-              <h1>InErasmus</h1>
+              <Link to="/">
+                <img width={130} className="block" src="/logo.png" alt="" />
+              </Link>
             </div>
             <div className="ml-10 flex items-baseline space-x-4">
               <Link
-                to="/"
-                className="text-gray-900 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Home
-              </Link>
-              <Link
-                to="/products"
+                to="/blog"
                 className="text-gray-900 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
               >
                 Search feedback

@@ -7,7 +7,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 export function ActivityCard({ img }: { img: string }) {
   return (
@@ -24,12 +33,6 @@ export function ActivityCard({ img }: { img: string }) {
 }
 
 const ProfilePage = () => {
-  const test = axios({
-    method: "get",
-    url: "http://13.51.252.249:8080/api/main/students/get",
-  }).then((data) => {
-    console.log(data);
-  });
   return (
     <div className="w-full flex">
       <div className="w-1/3">
@@ -56,10 +59,28 @@ const ProfilePage = () => {
         </div>
         <div className="ml-6">GMT +03:00</div>
 
-        <Button className="mt-5 flex items-center gap-2" size="lg">
-          <Send />
-          Contact
-        </Button>
+        <Dialog>
+          <DialogTrigger>
+            {" "}
+            <Button className="mt-5 flex items-center gap-2" size="lg">
+              <Send />
+              Contact
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Ask question.</DialogTitle>
+              <DialogDescription>Please be polite.</DialogDescription>
+            </DialogHeader>
+            <Textarea />
+            <DialogFooter>
+              <Button className="mt-5 flex items-center gap-2" size="lg">
+                <Send />
+                Send
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="w-2/3">
         <div className="flex items-center gap-2">
