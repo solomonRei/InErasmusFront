@@ -1,14 +1,7 @@
 import { Mail, MapPin, Send } from "lucide-react";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -17,138 +10,166 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { FC } from "react";
 
-export type ActivityCardProps = {
+// Define types
+interface Program {
   img: string;
-  title: string;
+  name?: string;
+  title?:string
   description: string;
-};
+}
 
-const activities = [
-  {
-    img: "https://ru.kra.lv/wp-content/uploads/sites/3/2013/07/eu_flag_erasmus_vect_pos.jpg",
-    title: "Orientation Week",
-    description:
-      "Get to know the campus, meet fellow students, and learn about the local culture during the orientation week.",
-  },
-  {
-    img: "https://ru.kra.lv/wp-content/uploads/sites/3/2013/07/eu_flag_erasmus_vect_pos.jpg",
-    title: "Cultural Exchange Program",
-    description:
-      "Participate in cultural exchange activities to learn about different cultures and traditions.",
-  },
-  {
-    img: "https://ru.kra.lv/wp-content/uploads/sites/3/2013/07/eu_flag_erasmus_vect_pos.jpg",
-    title: "Language Workshops",
-    description:
-      "Improve your language skills by attending workshops organized by the language center.",
-  },
-  {
-    img: "https://ru.kra.lv/wp-content/uploads/sites/3/2013/07/eu_flag_erasmus_vect_pos.jpg",
-    title: "City Tours",
-    description:
-      "Explore the city with guided tours and discover historical landmarks and hidden gems.",
-  },
-];
+interface Profile {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  avatarUrl: string;
+  dateOfBirth: string;
+  isGraduated: boolean;
+  universityId: number;
+  facultyId: number;
+  facultyResponse: {
+    id: number;
+    name: string;
+    abbreviation: string;
+    studyField: string;
+  };
+  universityResponse: {
+    id: number;
+    name: string;
+  };
+  achievements: {
+    id: number;
+    name: string;
+    description: string;
+  }[];
+  programs: Program[];
+}
 
-export const ActivityCard: FC<ActivityCardProps> = ({
-  img,
-  title,
-  description,
-}) => {
+export const ActivityCard: FC<Program> = ({ img, name, description }) => {
   return (
     <Card className="w-[350px]">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle>{name}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <img src={img} alt={title} className="w-full h-auto" />
+        {img &&
+
+          <img src={img} alt={name} className="w-full h-auto" />
+        }
       </CardContent>
     </Card>
   );
 };
 
-type ProfilePageProps = {
-  username: string;
-  email: string;
-  location: string;
-  timezone: string;
-  university: string;
-  faculty: string;
-  dateStart: string;
-  dateEnd: string;
-  universityImg: string;
-  userImg: string;
-};
+const ProfilePage: FC = () => {
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const location = useLocation();
 
-const ProfilePage = () => {
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const studentId = location.pathname.split('/').pop();
+      try {
+        const response = await axios.get<Profile>(`http://51.20.109.17:8080/api/main/students/${studentId}`);
+        setProfile(response.data);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+
+    fetchProfile();
+  }, [location]);
+
+  if (!profile) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div className="w-full flex">
-      <div className="w-1/3">
-        <div className="border-gray-200 rounded max-w-[300px]">
-          <img className="rounded" width={300} src={userImg} />
-          {/* achievments section */}
-          <div></div>
-          {/* user details section */}
-          <div className=" flex-col">
-            <h2 className="mt-2 text-xl">{username}</h2>
-            <div className="flex gap-1 items-center mt-2">
-              <Mail />
-              {email}
-            </div>
+    <div className="flex flex-col sm:flex-col md:flex-row w-full">
+      <div className="md:w-1/3 w-full p-2">
+        <div className="border-gray-200 rounded max-w-[300px] mx-auto md:mx-0">
+          <img className="rounded" width={300} src={profile.avatarUrl} alt={`${profile.firstName} ${profile.lastName}`} />
+          <div className="mt-2 text-xl">{`${profile.firstName} ${profile.lastName}`}</div>
+          <div className="flex gap-1 items-center mt-2">
+            <Mail />
+            {profile.email}
           </div>
-        </div>
-        <div className="mt-5 max-w-[300px] flex items-center gasp-2">
-          <MapPin />
-          <div>{location}</div>
-        </div>
-        <div className="ml-6">{timezone}</div>
+          <div className="mt-5 max-w-[300px] flex items-center gap-2">
+            <MapPin />
+            <div>{profile.universityResponse.name}</div>
+          </div>
+          <div className="ml-6">{profile.facultyResponse.name}</div>
+          <div className="ml-6">{profile.facultyResponse.studyField}</div>
 
-        <Dialog>
-          <DialogTrigger>
-            {" "}
-            <Button className="mt-5 flex items-center gap-2" size="lg">
-              <Send />
-              Contact
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Ask question.</DialogTitle>
-              <DialogDescription>Please be polite.</DialogDescription>
-            </DialogHeader>
-            <Textarea />
-            <DialogFooter>
+          <Dialog>
+            <DialogTrigger>
               <Button className="mt-5 flex items-center gap-2" size="lg">
                 <Send />
-                Send
+                Contact
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Ask question.</DialogTitle>
+                <DialogDescription>Please be polite.</DialogDescription>
+              </DialogHeader>
+              <Textarea />
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button className="mt-5 flex items-center gap-2" size="lg">
+                    <Send />
+                    Send
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          <div className="mt-5">
+            <h3 className="text-lg font-semibold">Achievements</h3>
+            <ul className="list-disc pl-5">
+              {profile.achievements.map((achievement) => (
+                <li key={achievement.id}>
+                  <strong>{achievement.name}:</strong> {achievement.description}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
-      <div className="w-2/3">
+      <div className="md:w-2/3 w-full p-2">
         <div className="flex items-center gap-2">
           <img
             width={50}
             className="rounded-full"
-            // src="https://media.licdn.com/dms/image/C560BAQGtoQjJJE10Pw/company-logo_100_100/0/1631363419314?e=1724284800&v=beta&t=8urEwxpWPMEv8OToNYOsgaFb0rWxqs9kSN6j5izpFcI"
-            src={universityImg}
+            src={profile.universityResponse.name}
             alt=""
           />
           <div>
-            <h2 className="text-lg">{university}</h2>
-            <span className="text-sm">{faculty}</span>
+            <h2 className="text-lg">{profile.universityResponse.name}</h2>
+            <span className="text-sm">{profile.facultyResponse.name}</span>
             <br />
-            <span>{dateStart}</span>-<span>{dateEnd}</span>
+            <span>{profile.dateOfBirth}</span> - Now
           </div>
         </div>
 
-        <div className="mt-10 flex gap-2">
-          {activities.map((item: ActivityCardProps, index: number) => {
-            return <ActivityCard {...item} key={index} />;
+        <div className="flex flex-wrap md:mt-10 gap-2">
+          {profile?.programs?.map((program, index) => {
+            return <ActivityCard {...program} key={index} />;
           })}
         </div>
       </div>

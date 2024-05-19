@@ -10,6 +10,12 @@
   padding: 2rem 0;
 }
 
+@media screen and (max-width: 768px) {
+  #root > div{
+    padding: 0 10px;
+  }
+}
+
 html,
 body {
   height: 100%;

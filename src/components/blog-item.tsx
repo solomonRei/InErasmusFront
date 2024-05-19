@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarImage } from "./ui/avatar";
 import { Link } from "react-router-dom";
 import { Heart } from "lucide-react";
 import { Button } from "./ui/button";
@@ -16,19 +16,16 @@ import { BlogItemProps } from "@/pages/BlogPage/types";
 const BlogItem: FC<BlogItemProps> = ({
   title,
   text,
-  author,
-  date,
-  authorAvatar,
   likes,
-  isLiked,
-  authorId,
+  createdAt,
+  student,
 }) => {
   return (
-    <Link to={`/profile/${authorId}`}>
+    <Link to={`/profile/${student.id}`}>
       <Card>
         <CardHeader>
           <CardTitle>{title}</CardTitle>
-          <CardDescription>{date}</CardDescription>
+          <CardDescription>{createdAt}</CardDescription>
         </CardHeader>
         <CardContent>
           <p>{text}</p>
@@ -36,9 +33,9 @@ const BlogItem: FC<BlogItemProps> = ({
         <CardFooter className="flex justify-between">
           <div className="flex items-center gap-2">
             <Avatar>
-              <AvatarImage src={authorAvatar} alt="" />
+              <AvatarImage src={student.avatarUrl} alt={`${student.firstName} ${student.lastName}`} />
             </Avatar>
-            <p>{author}</p>
+            <p>{`${student.firstName} ${student.lastName}`}</p>
           </div>
           <div className="flex items-center gap-2">
             <h2 className="text-destructive">{likes}</h2>
@@ -47,7 +44,7 @@ const BlogItem: FC<BlogItemProps> = ({
               variant="destructive"
               onClick={(e) => e.stopPropagation()}
             >
-              <Heart fill={isLiked ? "#fff" : "transparent"} />
+              <Heart />
             </Button>
           </div>
         </CardFooter>

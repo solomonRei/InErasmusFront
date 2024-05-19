@@ -1,6 +1,7 @@
 import { useState, ChangeEvent, KeyboardEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import axios from 'axios';
 
 interface Message {
   sender: "user" | "bot";
@@ -10,25 +11,32 @@ interface Message {
 const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
     const userMessage: Message = { sender: "user", text: inputValue };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
+    setInputValue("");
+    setLoading(true);
 
     const botMessage: Message = {
       sender: "bot",
       text: await getBotResponse(inputValue),
     };
     setMessages((prevMessages) => [...prevMessages, botMessage]);
-
-    setInputValue("");
+    setLoading(false);
   };
 
   const getBotResponse = async (message: string): Promise<string> => {
-    // Replace with actual API call to your bot service if available
-    return `Bot says: ${message}`;
+    try {
+      const response = await axios.get(`http://erasmusalb-191086454.eu-north-1.elb.amazonaws.com/generate/${message}`);
+      return response.data.message; // Adjust this according to the actual structure of your API response
+    } catch (error) {
+      console.error("Error fetching bot response:", error);
+      return "Sorry, something went wrong.";
+    }
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -55,12 +63,17 @@ const ChatPage = () => {
                   : "bg-gray-100 text-left"
               }`}
             >
-              <strong>{message.sender === "user" ? "You" : "Bot"}:</strong>{" "}
+              <strong>{message.sender === "user" ? "You" : "ErasmusGPT"}:</strong>{" "}
               {message.text}
             </div>
           ))}
+          {loading && (
+            <div className="flex justify-center items-center rounded-full">
+              <img className="rounded-full w-16 h-16" src="https://cdn.dribbble.com/userupload/10543014/file/original-4703d0ba72b72f87fa49a618a24a1f6d.gif" alt="Loading..."/>
+            </div>
+          )}
         </div>
-      </div>
+      </div>  
       <div className="flex mt-4">
         <Input
           value={inputValue}

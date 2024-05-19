@@ -49,9 +49,9 @@ const HomePage = () => {
           </Link>
         </div>
       </div>
-      <div className="flex  justify-between gap-2">
-        {activities.map((item) => (
-          <ActivityCard {...item} />
+      <div className="md:flex  justify-between gap-2">
+        {activities.map((item,key) => (
+          <ActivityCard {...item} key={key}/>
         ))}
       </div>
     </>
