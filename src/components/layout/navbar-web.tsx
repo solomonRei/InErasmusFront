@@ -76,16 +76,10 @@ const Navbar = () => {
                 Search feedback
               </Link>
               <Link
-                to="/about"
+                to="/chat"
                 className="text-gray-900 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
               >
-                About
-              </Link>
-              <Link
-                to="/contact"
-                className="text-gray-900 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Contact
+                ErasmusGPT
               </Link>
             </div>
           </div>
